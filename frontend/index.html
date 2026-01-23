@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Management</title>
+</head>
+<body>
+    <h2>Create User</h2>
+
+    <form id="userForm">
+        <label>Username:</label>
+        <input type="text" id="username" required /><br><br>
+
+        <label>Email:</label>
+        <input type="email" id="email" required /><br><br>
+
+        <button type="submit">Create User</button>
+    </form>
+
+    <hr>
+	
+
+    <h2>All Users</h2>
+    <button onclick="fetchUsers()">Fetch Users</button>
+	
+
+    <br><br>
+
+    <!-- Table hidden initially -->
+    <table border="1" id="userTable" style="display:none;">
+        <thead>
+            <tr>
+				<th>Id</th>
+                <th>Username</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+        </tbody>
+    </table>
+
+    <script>
+        const apiUrl = "http://localhost:8080/api/users";
+
+        // Create user
+        document.getElementById("userForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const userData = {
+                name: document.getElementById("username").value,
+                emailId: document.getElementById("email").value
+            };
+
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert("User created!");
+                    document.getElementById("userForm").reset();
+                } else {
+                    alert("Error creating user");
+                }
+            });
+        });
+
+        // Fetch users on button click
+        function fetchUsers() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const table = document.getElementById("userTable");
+                    const tbody = document.getElementById("userTableBody");
+
+                    tbody.innerHTML = "";
+
+                    if (data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="2">No users found</td></tr>`;
+                    } else {
+                        data.forEach(user => {
+                            const row = `
+                                <tr>
+									<td>${user.id}
+                                    <td>${user.name}</td>
+                                    <td>${user.emailId}</td>
+                                </tr>
+                            `;
+                            tbody.innerHTML += row;
+                        });
+                    }
+
+                    // Show table after fetching
+                    table.style.display = "table";
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Failed to fetch users");
+                });
+        }
+		
+	
+	
+    </script>
+</body>
+</html>
