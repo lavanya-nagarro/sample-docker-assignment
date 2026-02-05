@@ -34,7 +34,7 @@ jobs:
       run: mvn com.github.ferstl:depgraph-maven-plugin:4.0.1:graph
       
     - name: Build and Push Docker Image
-      uses: docker/docker-build-push@v4
+      uses: docker/build-push-action@v2
       with:
         image: lavanyang/docker-basic
         registry: docker.io
